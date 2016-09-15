@@ -13,29 +13,25 @@
             zoom: 10,
             Lat: '51.402196',
             Lng: '21.145046',
-            title: null,
-            markerIco: 'images/marker.svg'
+            title: undefined,
+            icon: undefined,
+            styles: [{"featureType":"water","elementType":"geometry.fill","stylers":[{"color":"#d3d3d3"}]},{"featureType":"transit","stylers":[{"color":"#808080"},{"visibility":"off"}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"visibility":"on"},{"color":"#b3b3b3"}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.local","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"color":"#ffffff"},{"weight":1.8}]},{"featureType":"road.local","elementType":"geometry.stroke","stylers":[{"color":"#d7d7d7"}]},{"featureType":"poi","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"color":"#ebebeb"}]},{"featureType":"administrative","elementType":"geometry","stylers":[{"color":"#a7a7a7"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"landscape","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"color":"#efefef"}]},{"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#696969"}]},{"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"visibility":"on"},{"color":"#737373"}]},{"featureType":"poi","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#d6d6d6"}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{},{"featureType":"poi","elementType":"geometry.fill","stylers":[{"color":"#dadada"}]}]
         };
         
-
     function Plugin (element, options) {
         this.element = element;
         
-        //optional config in html tag
-        var htmlOptions = {
-            zoom: ($(this.element)[0].hasAttribute('data-zoom')) ? parseInt($(this.element).attr('data-zoom')) : null,
-            Lat: ($(this.element)[0].hasAttribute('data-Lat')) ? $(this.element).attr('data-Lat') : null,
-            Lng: ($(this.element)[0].hasAttribute('data-Lng')) ? $(this.element).attr('data-Lng') : null,
-            title: ($(this.element)[0].hasAttribute('data-title')) ? $(this.element).attr('data-title') : null
-        };
+        //alternative config in html
+        var htmlOptions = $(this.element).data();
         
         this.settings = $.extend( {}, defaults, htmlOptions, options );
         this._defaults = defaults;
         this._name = pluginName;
+        
         this.init();
     }
 
-    $.extend( Plugin.prototype, {
+    $.extend(Plugin.prototype, {
         init: function() {
             this.initializeMap();
         },
@@ -49,13 +45,11 @@
             myLatLng = new google.maps.LatLng(this.settings.Lat, this.settings.Lng),
             title = this.settings.title;
             
-            var styles = [{"featureType":"water","elementType":"geometry.fill","stylers":[{"color":"#d3d3d3"}]},{"featureType":"transit","stylers":[{"color":"#808080"},{"visibility":"off"}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"visibility":"on"},{"color":"#b3b3b3"}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.local","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"color":"#ffffff"},{"weight":1.8}]},{"featureType":"road.local","elementType":"geometry.stroke","stylers":[{"color":"#d7d7d7"}]},{"featureType":"poi","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"color":"#ebebeb"}]},{"featureType":"administrative","elementType":"geometry","stylers":[{"color":"#a7a7a7"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"landscape","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"color":"#efefef"}]},{"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#696969"}]},{"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"visibility":"on"},{"color":"#737373"}]},{"featureType":"poi","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road.arterial","elementType":"geometry.stroke","stylers":[{"color":"#d6d6d6"}]},{"featureType":"road","elementType":"labels.icon","stylers":[{"visibility":"off"}]},{},{"featureType":"poi","elementType":"geometry.fill","stylers":[{"color":"#dadada"}]}];
-        
             var mapOptions = {
                 zoom: this.settings.zoom,
                 center: myLatLng,
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
-                styles: styles,
+                styles: this.settings.styles,
                 scrollwheel: false
             };
             
@@ -78,7 +72,7 @@
             marker = new google.maps.Marker({
                 position: myLatLng,
                 map: map,
-                icon: this.settings.markerIco,
+                icon: this.settings.icon,
                 animation: google.maps.Animation.BOUNCE
             });
             google.maps.event.addListener(marker, 'click', (function(marker, i) {
@@ -92,11 +86,6 @@
             
             bounds.extend(myLatLng);
             gmarkers.push(marker);
-            
-            //log
-            google.maps.event.addListener(map, 'idle', function() {
-                console.log('Map initialised');
-            });
         }
     });
 

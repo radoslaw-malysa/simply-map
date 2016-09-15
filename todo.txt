@@ -1,0 +1,4 @@
+1. Configuration of mapType
+2. Configuration of marker animation
+3. Configuration of styles
+4. Add methods: beforeIinit, onInit, destroy, onClick
